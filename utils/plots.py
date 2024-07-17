@@ -27,6 +27,8 @@ matplotlib.use('Agg')  # for writing to files only
 FILE = Path(__file__).absolute()
 ROOT = FILE.parents[1]  # yolov5/ dir
 
+TMP_DIR = '/tmp'
+
 
 class Colors:
     # Ultralytics color palette https://ultralytics.com/
@@ -50,11 +52,11 @@ colors = Colors()  # create instance for 'from utils.plots import colors'
 
 # NEW VERSION
 def check_font(font='Arial.ttf', size=10):
-    # Define the directory where fonts will be downloaded
-    tmp_dir = os.environ.get('TMPDIR', '/tmp')
+    # Construct the full path to the font file in the temporary directory
+    font_path = Path(TMP_DIR) / font
     
-    # Construct the full path to the font file
-    font_path = Path(tmp_dir) / font
+    # Ensure the directory exists before attempting to download
+    os.makedirs(font_path.parent, exist_ok=True)
     
     # Check if the font file exists, otherwise download it
     if not font_path.exists():
@@ -64,7 +66,6 @@ def check_font(font='Arial.ttf', size=10):
     
     # Return the PIL TrueType Font
     return ImageFont.truetype(str(font_path), size)
-
 
 # OLD VERSION
 # def check_font(font='Arial.ttf', size=10):

@@ -3,6 +3,7 @@
 Plotting utils
 """
 
+import os
 import math
 from copy import copy
 from pathlib import Path
@@ -47,18 +48,36 @@ class Colors:
 
 colors = Colors()  # create instance for 'from utils.plots import colors'
 
-
+# NEW VERSION
 def check_font(font='Arial.ttf', size=10):
-    # Return a PIL TrueType Font, downloading to ROOT dir if necessary
-    font = Path(font)
-    font = font if font.exists() else (ROOT / font.name)
-    try:
-        return ImageFont.truetype(str(font) if font.exists() else font.name, size)
-    except Exception as e:  # download if missing
-        url = "https://ultralytics.com/assets/" + font.name
-        print(f'Downloading {url} to {font}...')
-        torch.hub.download_url_to_file(url, str(font))
-        return ImageFont.truetype(str(font), size)
+    # Define the directory where fonts will be downloaded
+    tmp_dir = os.environ.get('TMPDIR', '/tmp')
+    
+    # Construct the full path to the font file
+    font_path = Path(tmp_dir) / font
+    
+    # Check if the font file exists, otherwise download it
+    if not font_path.exists():
+        url = f"https://ultralytics.com/assets/{font}"
+        print(f'Downloading {url} to {font_path}...')
+        torch.hub.download_url_to_file(url, str(font_path))
+    
+    # Return the PIL TrueType Font
+    return ImageFont.truetype(str(font_path), size)
+
+
+# OLD VERSION
+# def check_font(font='Arial.ttf', size=10):
+#     # Return a PIL TrueType Font, downloading to ROOT dir if necessary
+#     font = Path(font)
+#     font = font if font.exists() else (ROOT / font.name)
+#     try:
+#         return ImageFont.truetype(str(font) if font.exists() else font.name, size)
+#     except Exception as e:  # download if missing
+#         url = "https://ultralytics.com/assets/" + font.name
+#         print(f'Downloading {url} to {font}...')
+#         torch.hub.download_url_to_file(url, str(font))
+#         return ImageFont.truetype(str(font), size)
 
 
 class Annotator:

@@ -9,9 +9,15 @@ def write_kp_labels(data):
     assert not osp.isdir(osp.join(data['path'], data['labels'])), \
         'Labels already generated. Remove or choose new name for labels.'
 
-    is_coco = 'crowdpose' not in data['path']
+    is_coco = 'crowdpose' not in data['path']   # more like: not crowdpose
+    is_external = False 
+
     if is_coco:
         from pycocotools.coco import COCO
+        # EDIT: Nico 26.07.24 to add fuctionality for more datasets
+        # still load from pycocotools 
+        # check if it is actually COCO: 
+        is_external = 'coco' not in data['path']
     else:
         from crowdposetools.coco import COCO
 
@@ -87,7 +93,7 @@ def write_kp_labels(data):
 
         with open(img_txt_path, 'w') as f:
             for img_info in coco.imgs.values():
-                f.write(osp.join(data['path'], 'images',
+                f.write(osp.join(data['path'], '' if is_external else 'images', # EDIT: Nico 26.07.24 NO 'images' if it is external
                                  '{}'.format(split if is_coco else ''),
                                  img_info['file_name']) + '\n')
 

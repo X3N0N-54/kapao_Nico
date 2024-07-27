@@ -24,12 +24,12 @@ def write_kp_labels(data):
     splits = [osp.splitext(osp.split(data[s])[-1])[0] for s in ['train', 'val', 'test'] if s in data]
     annotations = [osp.join(data['path'], data['{}_annotations'.format(s)]) for s in ['train', 'val', 'test'] if s in data]
     test_split = [0 if s in ['train', 'val'] else 1 for s in ['train', 'val', 'test'] if s in data]
-    img_txt_dir = osp.join(data['path'], data['labels'], 'img_txt')
+    img_txt_dir = osp.join(data['path'], data['labels'], 'img_txt')     # saved to e.g ../datasets/mpii/kp_labels/img_txt/
     os.makedirs(img_txt_dir, exist_ok=True)
 
     for split, annot, is_test in zip(splits, annotations, test_split):
-        img_txt_path = osp.join(img_txt_dir, '{}.txt'.format(split))
-        labels_path = osp.join(data['path'], '{}/{}'.format(data['labels'], split if is_coco else ''))
+        img_txt_path = osp.join(img_txt_dir, '{}.txt'.format(split)) # saves to e.g ../datasets/mpii/kp_labels/img_txt/images.txt
+        labels_path = osp.join(data['path'], '{}/{}'.format(data['labels'], split if is_coco else '')) # e.g ../datasets/mpii/kp_labels/
         if not is_test:
             os.makedirs(labels_path, exist_ok=True)
         coco = COCO(annot)
@@ -93,7 +93,7 @@ def write_kp_labels(data):
 
         with open(img_txt_path, 'w') as f:
             for img_info in coco.imgs.values():
-                f.write(osp.join(data['path'], '' if is_external else 'images', # EDIT: Nico 26.07.24 NO 'images' if it is external
+                f.write(osp.join(data['path'], '' if is_external else 'images', # EDIT: Nico 26.07.24 NO 'images' if it is external TODO check and finish
                                  '{}'.format(split if is_coco else ''),
                                  img_info['file_name']) + '\n')
 

@@ -36,6 +36,7 @@ def get_id_from_path(path) -> int:
     dir_id = path_list[-2]
     try:
         id = int(dir_id + img_id)
+        print(f"id: {id}")
         return id
     except ValueError:
         return int(img_id)

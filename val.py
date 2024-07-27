@@ -23,6 +23,24 @@ import pickle
 PAD_COLOR = (114 / 255, 114 / 255, 114 / 255)
 
 
+def get_id_from_path(path) -> int:
+    # This is only tested with the human36M dataset so far
+    path_list = path.split("/")
+    try:
+        img_id = str(int(path_list[-1].split(".")[-2]))
+    except ValueError:
+        try:
+            img_id = str(int(path_list[-1].split(".")[-2].split("_")[1]))
+        except IndexError:
+            print(f"IndexError: {path}")
+    dir_id = path_list[-2]
+    try:
+        id = int(dir_id + img_id)
+        return id
+    except ValueError:
+        return int(img_id)
+
+
 def run_nms(data, model_out):
     if data['iou_thres'] == data['iou_thres_kp'] and data['conf_thres_kp'] >= data['conf_thres']:
         # Combined NMS saves ~0.2 ms / image
@@ -43,7 +61,6 @@ def run_nms(data, model_out):
 
 def post_process_batch(data, imgs, paths, shapes, person_dets, kp_dets,
                        two_stage=False, pad=0, device='cpu', model=None, origins=None):
-
     batch_bboxes, batch_poses, batch_scores, batch_ids = [], [], [], []
     n_fused = np.zeros(data['num_coords'] // 2)
 
@@ -51,6 +68,7 @@ def post_process_batch(data, imgs, paths, shapes, person_dets, kp_dets,
         origins = [np.array([0, 0, 0]) for _ in range(len(person_dets))]
 
     # process each image in batch
+    batch_size = len(person_dets)
     for si, (pd, kpd, origin) in enumerate(zip(person_dets, kp_dets, origins)):
         nd = pd.shape[0]
         nkp = kpd.shape[0]
@@ -58,10 +76,11 @@ def post_process_batch(data, imgs, paths, shapes, person_dets, kp_dets,
         if nd:
             path, shape = Path(paths[si]) if len(paths) else '', shapes[si][0]
             try:
-                img_id = int(osp.splitext(osp.split(path)[-1])[0].lstrip("img_")) if path else si
+                # img_id = int(osp.splitext(osp.split(path)[-1])[0].lstrip("img_")) if path else si
+                img_id = get_id_from_path(paths[si])
             except ValueError:
                 print(f"ValueError: {osp.splitext(osp.split(path)[-1])[0].lstrip('img_')}")
-                img_id = si
+
 
             # TWO-STAGE INFERENCE (EXPERIMENTAL)
             if two_stage:
@@ -254,6 +273,9 @@ def run(data,
         # Fuse keypoint and pose detections
         _, poses, scores, img_ids, n_fused_batch = post_process_batch(
             data, imgs, paths, shapes, person_dets, kp_dets, two_stage, pad, device, model)
+        
+        
+        
 
         t2 += time_sync() - t
         seen += len(imgs)

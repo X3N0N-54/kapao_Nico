@@ -58,8 +58,9 @@ def post_process_batch(data, imgs, paths, shapes, person_dets, kp_dets,
         if nd:
             path, shape = Path(paths[si]) if len(paths) else '', shapes[si][0]
             try:
-                img_id = int(osp.splitext(osp.split(path)[-1])[0]) if path else si
+                img_id = int(osp.splitext(osp.split(path)[-1])[0].lstrip("img_")) if path else si
             except ValueError:
+                print(f"ValueError: {osp.splitext(osp.split(path)[-1])[0].lstrip('img_')}")
                 img_id = si
 
             # TWO-STAGE INFERENCE (EXPERIMENTAL)

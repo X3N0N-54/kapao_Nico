@@ -315,12 +315,36 @@ def run(data,
         annot = osp.join(data['path'], data['{}_annotations'.format(task)])     # path to annotations 
         coco = COCO(annot)                                      # ground truth from annotations
         result = coco.loadRes(json_path)                        # the models predition
+        # Initialize COCOeval object
         eval = COCOeval(coco, result, iouType='keypoints')      
         if 'oks_sigmas' in data:
             eval.params.kpt_oks_sigmas = data['oks_sigmas']
+
+        # Perform evalutation
         eval.evaluate()
+        
+        # Check the dimensions of the evaluation results
+        print("Results per Image: ")
+        print(eval.evalImgs)
+        
+        # accumulate results
         eval.accumulate()
-        eval.summarize()
+
+        # Check the dimensions of the accumulated results
+        print("Accumulated results:")
+        print(eval.eval) 
+
+        # Summarize and print results
+        try:
+            eval.summarize()
+        except IndexError as e:
+            print("Error during summarization:", e)
+            # Additional debug information
+            print("Dimensions of 's':", cocoEval.eval['precision'].shape)
+
+
+
+
         mAP, map50 = eval.stats[:2]
         if save_oks:
             oks_path = osp.splitext(json_path)[0] + '_oks.pkl'

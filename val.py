@@ -290,6 +290,7 @@ def run(data,
                 'keypoints': pose.reshape(-1).tolist(),
                 'score': float(score)  # person score
             })
+            print(f"img_id: {img_id}")
 
     if not training:  # save json
         save_dir, weights_name = osp.split(weights)
@@ -311,10 +312,10 @@ def run(data,
         json.dump(json_dump, f)
 
     if task in ('train', 'val'):
-        annot = osp.join(data['path'], data['{}_annotations'.format(task)])
-        coco = COCO(annot)
-        result = coco.loadRes(json_path)
-        eval = COCOeval(coco, result, iouType='keypoints')
+        annot = osp.join(data['path'], data['{}_annotations'.format(task)])     # path to annotations 
+        coco = COCO(annot)                                      # ground truth from annotations
+        result = coco.loadRes(json_path)                        # the models predition
+        eval = COCOeval(coco, result, iouType='keypoints')      
         if 'oks_sigmas' in data:
             eval.params.kpt_oks_sigmas = data['oks_sigmas']
         eval.evaluate()

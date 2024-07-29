@@ -25,6 +25,7 @@ PAD_COLOR = (114 / 255, 114 / 255, 114 / 255)
 
 def get_id_from_path(path) -> int:
     # This is only tested with the human36M dataset so far
+    print(f"path to image: {path}")
     path_list = path.split("/")
     try:
         img_id = str(int(path_list[-1].split(".")[-2]))
@@ -290,7 +291,7 @@ def run(data,
                 'keypoints': pose.reshape(-1).tolist(),
                 'score': float(score)  # person score
             })
-            print(f"img_id: {img_id}")
+            # print(f"img_id: {img_id}")
 
     if not training:  # save json
         save_dir, weights_name = osp.split(weights)
@@ -339,8 +340,9 @@ def run(data,
             eval.summarize()
         except IndexError as e:
             print("Error during summarization:", e)
-            # Additional debug information
-            print("Dimensions of 's':", eval.eval['precision'].shape)
+
+        # Additional debug information
+        print("Dimensions of 's':", eval.eval['precision'].shape)
 
 
 

@@ -340,7 +340,7 @@ def run(data,
         except IndexError as e:
             print("Error during summarization:", e)
             # Additional debug information
-            print("Dimensions of 's':", cocoEval.eval['precision'].shape)
+            print("Dimensions of 's':", eval.eval['precision'].shape)
 
 
 

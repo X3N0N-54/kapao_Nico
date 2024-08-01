@@ -130,6 +130,10 @@ def post_process_batch(data, imgs, paths, shapes, person_dets, kp_dets,
                     poses_mask = poses[mask]
 
                     if len(poses_mask):
+                        print(f"Shape of imgs[si]: {imgs[si].shape}")
+                        print(f"Shape of kpd[:, :4]: {kpd[:, :4].shape}")
+                        print(f"Shape of shape: {shape}")
+
                         kpd[:, :4] = scale_coords(imgs[si].shape[1:], kpd[:, :4].clone(), shape) # cloned the tensor
                         kpd = kpd[:, :6].cpu()
 
@@ -346,8 +350,23 @@ def run(data,
 
 
 
+        # After evaluation metrics are computed, before summarization
+        print(f"Type of eval.stats: {type(eval.stats)}")
+        if isinstance(eval.stats, list):
+            eval.stats = np.array(eval.stats)
+            print(f"Converted eval.stats to numpy array")
+        print(f"Shape of eval.stats: {eval.stats.shape}")
+        print(f"Content of eval.stats: {eval.stats}")
+        
+        # Proceed with the existing summarization code
+        try:
+            mAP, map50 = eval.stats[:2]
+        except ValueError as e:
+            print(f"Error unpacking eval.stats: {e}")
+            mAP, map50 = None, None  # Handle the error gracefully
 
-        mAP, map50 = eval.stats[:2]
+
+
         if save_oks:
             oks_path = osp.splitext(json_path)[0] + '_oks.pkl'
             with open(oks_path, 'wb') as f:

@@ -65,13 +65,13 @@ def write_kp_labels(data):
                 
                 # create directories of the path if they don't exist:
                 # Extract the directory from the file path
-                full_label_path = osp.join(labels_path, '{}.txt'.format(osp.splitext(img_info['file_name'])[0])), 'a'
+                full_label_path = osp.join(labels_path, '{}.txt'.format(osp.splitext(img_info['file_name'])[0]))
                 directory = os.path.dirname(full_label_path)
 
                 # Create the directory if it doesn't exist
                 os.makedirs(directory, exist_ok=True)
 
-                with open(full_label_path) as f:
+                with open(full_label_path, 'a') as f:
                     # write person object
                     s = '{} {:.6f} {:.6f} {:.6f} {:.6f}'.format(0, xc, yc, w, h)
                     if data['pose_obj']:

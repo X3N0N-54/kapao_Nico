@@ -6,6 +6,7 @@ from tqdm import tqdm
 
 
 def write_kp_labels(data):
+    print(f"Writing labels in: {osp.join(data['path'], data['labels'])} ")
     assert not osp.isdir(osp.join(data['path'], data['labels'])), \
         'Labels already generated. Remove or choose new name for labels.'
 
@@ -61,8 +62,16 @@ def write_kp_labels(data):
                 if not is_coco:
                     keypoints[:, 0] = np.clip(keypoints[:, 0], 0, img_w)
                     keypoints[:, 1] = np.clip(keypoints[:, 1], 0, img_h)
+                
+                # create directories of the path if they don't exist:
+                # Extract the directory from the file path
+                full_label_path = osp.join(labels_path, '{}.txt'.format(osp.splitext(img_info['file_name'])[0])), 'a'
+                directory = os.path.dirname(full_label_path)
 
-                with open(osp.join(labels_path, '{}.txt'.format(osp.splitext(img_info['file_name'])[0])), 'a') as f:
+                # Create the directory if it doesn't exist
+                os.makedirs(directory, exist_ok=True)
+
+                with open(full_label_path) as f:
                     # write person object
                     s = '{} {:.6f} {:.6f} {:.6f} {:.6f}'.format(0, xc, yc, w, h)
                     if data['pose_obj']:

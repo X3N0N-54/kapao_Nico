@@ -18,7 +18,7 @@ def write_kp_labels(data):
         # EDIT: Nico 26.07.24 to add fuctionality for more datasets
         # still load from pycocotools 
         # check if it is actually COCO: 
-        is_external = 'coco' not in data['path']
+        is_external = 'coco' not in data['path'] and 'crowdpose' not in data['path']
     else:
         from crowdposetools.coco import COCO
 

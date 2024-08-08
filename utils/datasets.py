@@ -372,6 +372,8 @@ class LoadStreams:  # multiple IP or RTSP cameras
 
 
 def img2label_paths(img_paths, image_dir='images', labels_dir='labels'):
+    print(f"img2label_paths: ============= img_paths:\n {img_paths}\n ============= image_dir: {img_dir}\n=============== labels_dir: {labels_dir}")
+
     return [os.path.splitext(s.replace(image_dir, labels_dir))[0] + '.txt' for s in img_paths]
 
 

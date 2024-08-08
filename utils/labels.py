@@ -103,7 +103,7 @@ def write_kp_labels(data):
         with open(img_txt_path, 'w') as f:
             for img_info in coco.imgs.values():
                 f.write(osp.join(data['path'], '' if is_external else 'images', # EDIT: Nico 26.07.24 NO 'images' if it is external TODO check and finish
-                                 '{}'.format(split if is_coco else ''),
+                                 '{}'.format(split if (is_coco and (not is_external)) else ''),
                                  img_info['file_name']) + '\n')
 
 

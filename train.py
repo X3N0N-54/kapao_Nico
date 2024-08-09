@@ -98,9 +98,11 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     is_coco = data.endswith('coco.yaml') and nc == 80  # COCO dataset
 
     labels_dir = data_dict.get('labels', 'labels')
+    print(f"labels_dir: {data_dict.get('labels', 'labels')}")
     kp_flip = data_dict.get('kp_flip')
     kp_bbox = data_dict.get('kp_bbox')
     num_coords = data_dict.get('num_coords', 0)
+
 
     # Model
     pretrained = weights.endswith('.pt')

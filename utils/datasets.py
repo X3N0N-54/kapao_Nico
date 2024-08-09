@@ -381,7 +381,7 @@ def img2label_paths(img_paths, image_dir='images', labels_dir='labels'):
             print(f"can print img_paths of type: {type(img_paths)}")
     
     # adjust if human36m dataset
-    if "human36m" in img_paths[0]:
+    if "human36m" in list(img_paths)[0]:
         return [os.path.splitext(s.replace("human36m","human36m/" + labels_dir))[0] + '.txt' for s in img_paths]
 
     return [os.path.splitext(s.replace(image_dir, labels_dir))[0] + '.txt' for s in img_paths]

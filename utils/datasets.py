@@ -376,8 +376,7 @@ def img2label_paths(img_paths, image_dir='images', labels_dir='labels'):
         print(f"img2label_paths: ============= img_paths:\n {img_paths[:5]}\n ============= image_dir: {image_dir}\n=============== labels_dir: {labels_dir}")
     except TypeError:
         if type(img_paths) == 'dict_keys':
-            print(f"img2label_paths: ============= img_paths:\n {list(img_paths)[:5]
-}\n ============= image_dir: {image_dir}\n=============== labels_dir: {labels_dir}")
+            print(f"img2label_paths: ============= img_paths:\n {list(img_paths)[:5]}\n ============= image_dir: {image_dir}\n=============== labels_dir: {labels_dir}")
         else: 
             print(f"can print img_paths of type: {type(img_paths)}")
     

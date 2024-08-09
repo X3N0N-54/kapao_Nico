@@ -30,7 +30,7 @@ def write_kp_labels(data):
 
     for split, annot, is_test in zip(splits, annotations, test_split):
         img_txt_path = osp.join(img_txt_dir, '{}.txt'.format(split)) # saves to e.g ../datasets/mpii/kp_labels/img_txt/images.txt
-        labels_path = osp.join(data['path'], '{}/{}'.format(data['labels'], split if is_coco else '')) # e.g ../datasets/mpii/kp_labels/
+        labels_path = osp.join(data['path'], '{}/{}'.format(data['labels'], split if is_coco and (not is_external) else '')) # e.g ../datasets/mpii/kp_labels/
         if not is_test:
             os.makedirs(labels_path, exist_ok=True)
         coco = COCO(annot)

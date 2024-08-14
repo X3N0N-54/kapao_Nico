@@ -314,6 +314,7 @@ def run(data,
         json_path = tmp.name
 
     with open(json_path, 'w') as f:
+        print(f"Saving to: {json_path}")
         json.dump(json_dump, f)
 
     if task in ('train', 'val'):

@@ -25,6 +25,7 @@ PAD_COLOR = (114 / 255, 114 / 255, 114 / 255)
 
 def get_id_from_path(path) -> int:
     # This is only tested with the human36M dataset so far
+    path = str(path)
     print(f"path to image: {path}")
     path_list = path.split("/")
     try:
@@ -77,13 +78,14 @@ def post_process_batch(data, imgs, paths, shapes, person_dets, kp_dets,
 
         if nd:
             path, shape = Path(paths[si]) if len(paths) else '', shapes[si][0]
-            try:
-                # img_id = int(osp.splitext(osp.split(path)[-1])[0].lstrip("img_")) if path else si
-                img_id = get_id_from_path(paths[si])
-            except ValueError:
-                print(f"ValueError: {osp.splitext(osp.split(path)[-1])[0].lstrip('img_')}")
-
-
+            if path:
+                try:
+                    # img_id = int(osp.splitext(osp.split(path)[-1])[0].lstrip("img_")) if path else si
+                    img_id = get_id_from_path(path)
+                except ValueError:
+                    print(f"ValueError: {osp.splitext(osp.split(path)[-1])[0].lstrip('img_')}")
+            else:
+                img_id = si
             # TWO-STAGE INFERENCE (EXPERIMENTAL)
             if two_stage:
                 gs = max(int(model.stride.max()), 32)  # grid size (max stride)

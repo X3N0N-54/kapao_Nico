@@ -63,10 +63,12 @@ def get_id_from_path(path) -> int:
     print(f"path to image: {path}")
 
     path_list = path.split("/")
-    
+
+
     # This will likely be human36M
-    if len(path_list) >= 4:
-        subject, action = path_list[0], path_list[1]
+    if len(path_list) >= 4 and 'human36m' in path_list:
+
+        subject, action = path_list[-5], path_list[-4]
      
         subject_id = get_subject_id(subject)
         action_id = get_action_id(action)       

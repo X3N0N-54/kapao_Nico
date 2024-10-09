@@ -19,15 +19,66 @@ from utils.torch_utils import select_device, time_sync
 import tempfile
 import cv2
 import pickle
+import re
 
 PAD_COLOR = (114 / 255, 114 / 255, 114 / 255)
+
+
+# Precompute action-to-ID mapping outside the function to avoid recalculating every time.
+actions = ['Purchases-1', 'Sitting-2', 'Eating-2', 'Discussion-1', 'WalkingTogether-1', 
+           'Phoning-2', 'TakingPhoto-1', 'WalkingDog-2', 'Eating-1', 'Greeting-1', 
+           'Walking-1', 'Smoking-2', 'Greeting-2', 'Phoning-1', 'Directions-1', 
+           'WalkingTogether-2', 'Purchases-2', 'WalkingDog-1', 'Waiting-2', 'Posing-1', 
+           'SittingDown-2', 'SittingDown-1', 'Walking-2', 'Directions-2', 'Sitting-1', 
+           'Smoking-1', 'TakingPhoto-2', 'Waiting-1', 'Posing-2', 'Discussion-2']
+
+# Dictionary for efficient lookups
+action_to_id = {action: idx for idx, action in enumerate(sorted(actions))}
+
+
+def get_subject_id(subject: str) -> str:
+    """
+    Extracts the digits from the subject name using regular expressions.
+    Returns "0" if no digits are found.
+    """
+    match = re.search(r'\d+', subject)
+    return match.group() if match else "0"
+
+
+def get_action_id(action: str) -> str:
+    """
+    Maps the action name to a unique ID.
+    Returns '-1' if the action is not found (indicating an error).
+    """
+    action_id = str(action_to_id.get(action, 9999))  # Use 99 for unknown actions
+    if action_id == "9999":
+        print(f"did't find id mapping for action: {action}")
+    
+    return action_id
 
 
 def get_id_from_path(path) -> int:
     # This is only tested with the human36M dataset so far
     path = str(path)
     print(f"path to image: {path}")
+
     path_list = path.split("/")
+    
+    # This will likely be human36M
+    if len(path_list) >= 4:
+        subject, action = path_list[0], path_list[1]
+     
+        subject_id = get_subject_id(subject)
+        action_id = get_action_id(action)       
+        # Extract the image ID part, assuming 'img_xxxxx.jpg' format
+        img_id = str(int(path_list[-1].split(".")[-2].split("_")[1]))
+        # Directory ID
+        dir_id = path_list[-2]
+        
+        id = int(subject_id + action_id + dir_id + img_id)
+        return id
+    
+    # keeps the standard functionality if the len of the path is < 4
     try:
         img_id = str(int(path_list[-1].split(".")[-2]))
     except ValueError:
@@ -36,6 +87,7 @@ def get_id_from_path(path) -> int:
         except IndexError:
             print(f"IndexError: {path}")
     dir_id = path_list[-2]
+
     try:
         id = int(dir_id + img_id)
         print(f"id: {id}")
@@ -82,7 +134,7 @@ def post_process_batch(data, imgs, paths, shapes, person_dets, kp_dets,
                 try:
                     # img_id = int(osp.splitext(osp.split(path)[-1])[0].lstrip("img_")) if path else si
                     img_id = get_id_from_path(path)
-                except ValueError:
+                except:
                     print(f"ValueError: {osp.splitext(osp.split(path)[-1])[0].lstrip('img_')}")
             else:
                 img_id = si
